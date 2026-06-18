@@ -1,32 +1,53 @@
+using AutoMapper;
+using FluentResults;
 using Microsoft.AspNetCore.Mvc;
 using ConversorNumerosInteirosRomanos.WebApp.ConversorNumerico.Aplicacao;
 
 namespace ConversorNumerosInteirosRomanos.WebApp.ConversorNumerico.Apresentacao;
 
-public class ConversorController : Controller
+public class ConversorController(ServicoConversor servicoConversor, IMapper mapeador) : Controller
 {
-    private readonly ServicoConversor _servico;
-
-    public ConversorController(ServicoConversor servico)
+    [HttpGet]
+    public IActionResult Index()
     {
-        _servico = servico;
-    }
-
-    public IActionResult Index() => View();
-
-    [HttpPost]
-    public IActionResult ParaRomano(int numero)
-    {
-        var dto = new ConverterParaRomanoDto(numero);
-        var resultado = _servico.ConverterParaRomano(dto);
-        return View("Index", resultado);
+        return View();
     }
 
     [HttpPost]
-    public IActionResult DeRomano(string romano)
+    public IActionResult ParaRomano(ConverterParaRomanoViewModel vm)
     {
-        var dto = new ConverterDeRomanoDto(romano);
-        var resultado = _servico.ConverterDeRomano(dto);
-        return View("Index", resultado);
+        if (!ModelState.IsValid)
+            return View("Index", vm);
+
+        var dto = mapeador.Map<ConverterParaRomanoDto>(vm);
+        Result<DetalhesConversaoDto> resultado = servicoConversor.ConverterParaRomano(dto);
+
+        if (resultado.IsFailed)
+        {
+            ModelState.AddModelError(string.Empty, resultado.Errors.First().Message);
+            return View("Index", vm);
+        }
+
+        var detalhesVm = mapeador.Map<DetalhesConversaoViewModel>(resultado.Value);
+        return View("Index", detalhesVm);
+    }
+
+    [HttpPost]
+    public IActionResult DeRomano(ConverterDeRomanoViewModel vm)
+    {
+        if (!ModelState.IsValid)
+            return View("Index", vm);
+
+        var dto = mapeador.Map<ConverterDeRomanoDto>(vm);
+        Result<DetalhesConversaoDto> resultado = servicoConversor.ConverterDeRomano(dto);
+
+        if (resultado.IsFailed)
+        {
+            ModelState.AddModelError(string.Empty, resultado.Errors.First().Message);
+            return View("Index", vm);
+        }
+
+        var detalhesVm = mapeador.Map<DetalhesConversaoViewModel>(resultado.Value);
+        return View("Index", detalhesVm);
     }
 }

@@ -1,8 +1,10 @@
 namespace ConversorNumerosInteirosRomanos.WebApp.ConversorNumerico.Dominio;
 
-using ConversorNumerosInteirosRomanos.WebApp.ConversorNumerico.Aplicacao;
-
 public interface IRepositorioConversor
 {
-    void Salvar(DetalhesConversaoDto detalhes);
+    void Cadastrar(ConversorNumIntRoman entidade);
+    List<ConversorNumIntRoman> SelecionarTodos();
+    ConversorNumIntRoman? SelecionarPorId(Guid id);
+    bool Editar(Guid id, ConversorNumIntRoman entidade);
+    bool Excluir(Guid id);
 }
