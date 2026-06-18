@@ -1,5 +1,4 @@
 using System.Text.Json;
-using ConversorNumerosInteirosRomanos.WebApp.ConversorNumerico.Aplicacao;
 using ConversorNumerosInteirosRomanos.WebApp.ConversorNumerico.Dominio;
 
 namespace ConversorNumerosInteirosRomanos.WebApp.ConversorNumerico.Infra;
@@ -8,19 +7,42 @@ public class RepositorioConversor : IRepositorioConversor
 {
     private const string CaminhoArquivo = "conversoes.json";
 
-    public void Salvar(DetalhesConversaoDto detalhes)
+    private List<ConversorNumIntRoman> Carregar()
     {
-        List<DetalhesConversaoDto> lista = new();
+        if (!File.Exists(CaminhoArquivo))
+            return new List<ConversorNumIntRoman>();
 
-        if (File.Exists(CaminhoArquivo))
-        {
-            var json = File.ReadAllText(CaminhoArquivo);
-            lista = JsonSerializer.Deserialize<List<DetalhesConversaoDto>>(json) ?? new();
-        }
+        var json = File.ReadAllText(CaminhoArquivo);
+        return JsonSerializer.Deserialize<List<ConversorNumIntRoman>>(json) ?? new List<ConversorNumIntRoman>();
+    }
 
-        lista.Add(detalhes);
+    private void Salvar(List<ConversorNumIntRoman> lista)
+    {
+        var json = JsonSerializer.Serialize(lista, new JsonSerializerOptions { WriteIndented = true });
+        File.WriteAllText(CaminhoArquivo, json);
+    }
 
-        var novoJson = JsonSerializer.Serialize(lista, new JsonSerializerOptions { WriteIndented = true });
-        File.WriteAllText(CaminhoArquivo, novoJson);
+    public void Cadastrar(ConversorNumIntRoman entidade)
+    {
+        var lista = Carregar();
+        lista.Add(entidade);
+        Salvar(lista);
+    }
+
+    public List<ConversorNumIntRoman> SelecionarTodos() => Carregar();
+
+    public ConversorNumIntRoman? SelecionarPorId(Guid id) => Carregar().FirstOrDefault(c => c.Id == id);
+
+    public bool Excluir(Guid id)
+    {
+        var lista = Carregar();
+        var entidade = lista.FirstOrDefault(c => c.Id == id);
+
+        if (entidade == null)
+            return false;
+
+        lista.Remove(entidade);
+        Salvar(lista);
+        return true;
     }
 }

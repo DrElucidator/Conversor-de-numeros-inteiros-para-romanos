@@ -15,10 +15,11 @@ public class ServicoConversor
     public Result<DetalhesConversaoDto> ConverterParaRomano(ConverterParaRomanoDto dto)
     {
         if (dto.Numero < 1 || dto.Numero > 3999)
-            return Result.Fail("Número deve estar entre 1 e 3999.");
+            return Falha(nameof(dto.Numero), "Número deve estar entre 1 e 3999.");
 
-        var romano = ExecutarConversaoParaRomano(dto.Numero);
-        var entidade = new ConversorNumIntRoman(dto.Numero, romano);
+        string romano = ExecutarConversaoParaRomano(dto.Numero);
+
+        ConversorNumIntRoman entidade = new ConversorNumIntRoman(dto.Numero, romano);
 
         repositorioConversor.Cadastrar(entidade);
 
@@ -28,57 +29,95 @@ public class ServicoConversor
     public Result<DetalhesConversaoDto> ConverterDeRomano(ConverterDeRomanoDto dto)
     {
         if (string.IsNullOrWhiteSpace(dto.Romano))
-            return Result.Fail("Número romano inválido.");
+            return Falha(nameof(dto.Romano), "Número romano inválido.");
 
-        var numero = ExecutarConversaoDeRomano(dto.Romano);
-        var entidade = new ConversorNumIntRoman(numero, dto.Romano.ToUpper());
+        int numero = ExecutarConversaoDeRomano(dto.Romano);
+
+        ConversorNumIntRoman entidade = new ConversorNumIntRoman(numero, dto.Romano.ToUpper());
 
         repositorioConversor.Cadastrar(entidade);
 
         return Result.Ok(new DetalhesConversaoDto(entidade.Id, entidade.Numero, entidade.Romano, entidade.DataHora));
     }
 
-    // Métodos utilitários internos
-    private static string ExecutarConversaoParaRomano(int num)
+    public List<DetalhesConversaoDto> SelecionarTodos()
     {
-        var numerais = new List<(int valor, string simbolo)>
+        return repositorioConversor
+            .SelecionarTodos()
+            .Select(c => new DetalhesConversaoDto(c.Id, c.Numero, c.Romano, c.DataHora))
+            .ToList();
+    }
+
+    public Result<DetalhesConversaoDto> SelecionarPorId(Guid id)
+    {
+        ConversorNumIntRoman? entidade = repositorioConversor.SelecionarPorId(id);
+
+        if (entidade == null)
+            return Result.Fail("Conversão não encontrada.");
+
+        return Result.Ok(new DetalhesConversaoDto(entidade.Id, entidade.Numero, entidade.Romano, entidade.DataHora));
+    }
+
+    public Result Excluir(Guid id)
+    {
+        ConversorNumIntRoman? entidade = repositorioConversor.SelecionarPorId(id);
+
+        if (entidade == null)
+            return Result.Fail("Conversão não encontrada.");
+
+        repositorioConversor.Excluir(id);
+
+        return Result.Ok();
+    }
+
+    private static string ExecutarConversaoParaRomano(int numero)
+    {
+        List<(int valor, string simbolo)> numerais = new List<(int, string)>
         {
             (1000, "M"), (900, "CM"), (500, "D"), (400, "CD"),
             (100, "C"), (90, "XC"), (50, "L"), (40, "XL"),
             (10, "X"), (9, "IX"), (5, "V"), (4, "IV"), (1, "I")
         };
 
-        var result = new System.Text.StringBuilder();
-        foreach (var (valor, simbolo) in numerais)
+        System.Text.StringBuilder resultado = new System.Text.StringBuilder();
+        foreach ((int valor, string simbolo) in numerais)
         {
-            while (num >= valor)
+            while (numero >= valor)
             {
-                result.Append(simbolo);
-                num -= valor;
+                resultado.Append(simbolo);
+                numero -= valor;
             }
         }
-        return result.ToString();
+        return resultado.ToString();
     }
 
     private static int ExecutarConversaoDeRomano(string romano)
     {
-        var mapa = new Dictionary<char, int>
+        Dictionary<char, int> mapa = new Dictionary<char, int>
         {
             {'I', 1}, {'V', 5}, {'X', 10}, {'L', 50},
             {'C', 100}, {'D', 500}, {'M', 1000}
         };
 
         int total = 0;
-        var chars = romano.ToUpper().ToCharArray();
+        char[] caracteres = romano.ToUpper().ToCharArray();
 
-        foreach (var (atual, proximo) in chars.Zip(chars.Skip(1).Append('\0')))
+        for (int i = 0; i < caracteres.Length; i++)
         {
-            if (proximo != '\0' && mapa[atual] < mapa[proximo])
-                total -= mapa[atual];
+            int valorAtual = mapa[caracteres[i]];
+            int valorProximo = (i + 1 < caracteres.Length) ? mapa[caracteres[i + 1]] : 0;
+
+            if (valorAtual < valorProximo)
+                total -= valorAtual;
             else
-                total += mapa[atual];
+                total += valorAtual;
         }
 
         return total;
+    }
+
+    private static Result Falha(string campo, string mensagem)
+    {
+        return Result.Fail(new Error(mensagem).WithMetadata("Campo", campo));
     }
 }
