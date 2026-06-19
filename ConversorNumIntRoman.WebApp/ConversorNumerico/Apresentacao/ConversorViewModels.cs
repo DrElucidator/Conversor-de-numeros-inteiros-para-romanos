@@ -10,7 +10,7 @@ public record ConverterParaRomanoViewModel(
 
 public record ConverterDeRomanoViewModel(
     [Required(ErrorMessage = "Informe um número romano.")]
-    [RegularExpression(@"^[IVXLCDM]+$", ErrorMessage = "Número romano inválido.")]
+    [RegularExpression(@"^[IVXLCDMivxlcdm]+$", ErrorMessage = "Número romano inválido.")]
     string Romano
 );
 

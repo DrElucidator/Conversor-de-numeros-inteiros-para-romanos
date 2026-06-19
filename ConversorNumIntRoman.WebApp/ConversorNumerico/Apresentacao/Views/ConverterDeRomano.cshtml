@@ -1,0 +1,19 @@
+@{
+    Layout = "_Layout";
+    ViewBag.Titulo = "Converter número romano para número inteiro";
+}
+
+@model ConversorNumerosInteirosRomanos.WebApp.ConversorNumerico.Apresentacao.ConverterDeRomanoViewModel
+
+<h2>Converter Número Romano para Inteiro</h2>
+
+<form asp-action="ConverterDeRomano" method="post">
+    <div class="form-group">
+        <label for="Romano">Número romano:</label>
+        <input asp-for="Romano" class="form-control" />
+        <span asp-validation-for="Romano" class="text-danger"></span>
+    </div>
+    <button type="submit" class="btn btn-success">Converter</button>
+</form>
+
+<a asp-action="Listar" class="btn btn-link">Voltar ao histórico</a>

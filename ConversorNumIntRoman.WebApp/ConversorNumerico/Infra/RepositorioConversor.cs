@@ -12,31 +12,37 @@ public class RepositorioConversor : IRepositorioConversor
         if (!File.Exists(CaminhoArquivo))
             return new List<ConversorNumIntRoman>();
 
-        var json = File.ReadAllText(CaminhoArquivo);
-        return JsonSerializer.Deserialize<List<ConversorNumIntRoman>>(json) ?? new List<ConversorNumIntRoman>();
+        string json = File.ReadAllText(CaminhoArquivo);
+        List<ConversorNumIntRoman>? lista = JsonSerializer.Deserialize<List<ConversorNumIntRoman>>(json);
+        return lista ?? new List<ConversorNumIntRoman>();
     }
 
     private void Salvar(List<ConversorNumIntRoman> lista)
     {
-        var json = JsonSerializer.Serialize(lista, new JsonSerializerOptions { WriteIndented = true });
+        string json = JsonSerializer.Serialize(lista, new JsonSerializerOptions { WriteIndented = true });
         File.WriteAllText(CaminhoArquivo, json);
     }
 
     public void Cadastrar(ConversorNumIntRoman entidade)
     {
-        var lista = Carregar();
+        List<ConversorNumIntRoman> lista = Carregar();
         lista.Add(entidade);
         Salvar(lista);
     }
 
     public List<ConversorNumIntRoman> SelecionarTodos() => Carregar();
 
-    public ConversorNumIntRoman? SelecionarPorId(Guid id) => Carregar().FirstOrDefault(c => c.Id == id);
+    public ConversorNumIntRoman? SelecionarPorId(Guid id)
+    {
+        List<ConversorNumIntRoman> lista = Carregar();
+        ConversorNumIntRoman? entidade = lista.FirstOrDefault(c => c.Id == id);
+        return entidade;
+    }
 
     public bool Excluir(Guid id)
     {
-        var lista = Carregar();
-        var entidade = lista.FirstOrDefault(c => c.Id == id);
+        List<ConversorNumIntRoman> lista = Carregar();
+        ConversorNumIntRoman? entidade = lista.FirstOrDefault(c => c.Id == id);
 
         if (entidade == null)
             return false;

@@ -1,0 +1,23 @@
+@{
+    Layout = "_Layout";
+    ViewBag.Titulo = "Excluir conversão do histórico";
+}
+
+@model ConversorNumerosInteirosRomanos.WebApp.ConversorNumerico.Apresentacao.DetalhesConversaoViewModel
+
+<h2>Excluir Conversão</h2>
+
+<p>Tem certeza que deseja excluir esta conversão?</p>
+
+<ul>
+    <li><strong>Número:</strong> @Model.Numero</li>
+    <li><strong>Romano:</strong> @Model.Romano</li>
+    <li><strong>Data/Hora:</strong> @Model.DataHora</li>
+</ul>
+
+<form asp-action="Excluir" method="post">
+    <input type="hidden" asp-for="Id" />
+
+    <button type="submit" class="btn btn-danger">Confirmar Exclusão</button>
+    <a asp-action="Listar" class="btn btn-secondary">Cancelar</a>
+</form>

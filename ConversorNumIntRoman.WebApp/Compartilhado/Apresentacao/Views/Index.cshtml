@@ -1,0 +1,24 @@
+@{
+    Layout = "~/Compartilhado/Apresentacao/Views/_Layout.cshtml";
+    ViewBag.Titulo = "Bem-vindo ao Conversor de Números";
+}
+
+<div style="text-align:center; margin-top:50px;">
+    <h1>Bem-vindo ao Conversor de Números Inteiros e Romanos</h1>
+
+    <p style="max-width:600px; margin:20px auto; font-size:18px; line-height:1.6;">
+        Converta números inteiros (de 1 a 3999) para numerais romanos
+        e de números romanos para inteiros.
+        Todas as conversões ficam registradas em um histórico para consulta e exclusão posterior.
+    </p>
+
+    <p style="font-size:18px; margin-bottom:40px;">
+        Clique no botão abaixo para iniciar e acessar o conversor.
+    </p>
+
+    <a asp-controller="Conversor" asp-action="Listar" 
+       class="btn btn-primary btn-lg" 
+       style="padding:15px 40px; font-size:20px;">
+        Iniciar
+    </a>
+</div>
