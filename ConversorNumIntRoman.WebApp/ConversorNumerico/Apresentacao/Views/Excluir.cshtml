@@ -5,19 +5,29 @@
 
 @model ConversorNumerosInteirosRomanos.WebApp.ConversorNumerico.Apresentacao.DetalhesConversaoViewModel
 
-<h2>Excluir Conversão</h2>
+<div class="d-flex justify-content-center gap-2 mb-3">
+    <h2>Excluir Conversão</h2>
+</div>
 
-<p>Tem certeza que deseja excluir esta conversão?</p>
+<div class="d-flex justify-content-center">
+    <p>Tem certeza que deseja excluir esta conversão?</p>
+</div>
 
-<ul>
-    <li><strong>Número:</strong> @Model.Numero</li>
-    <li><strong>Romano:</strong> @Model.Romano</li>
-    <li><strong>Data/Hora:</strong> @Model.DataHora</li>
-</ul>
+<div class="d-flex justify-content-center">
+    <ul>
+        <li><strong>Número:</strong> @Model.Numero</li>
+        <li><strong>Romano:</strong> @Model.Romano</li>
+        <li><strong>Data/Hora:</strong> @Model.DataHora</li>
+    </ul>
+</div>
 
-<form asp-action="Excluir" method="post">
-    <input type="hidden" asp-for="Id" />
+<div class="d-flex justify-content-center">
+    <form asp-action="Excluir" method="post">
+        <input type="hidden" asp-for="Id" />
 
-    <button type="submit" class="btn btn-danger">Confirmar Exclusão</button>
-    <a asp-action="Listar" class="btn btn-secondary">Cancelar</a>
-</form>
+        <div class="d-grid gap-2 mb-3">
+        <a asp-action="Listar" class="btn btn-secondary">Cancelar</a>
+        <button type="submit" class="btn btn-danger">Confirmar Exclusão</button>
+        </div>
+    </form>
+</div>

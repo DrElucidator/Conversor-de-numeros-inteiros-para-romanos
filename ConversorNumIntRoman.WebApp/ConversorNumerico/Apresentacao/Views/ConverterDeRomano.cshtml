@@ -5,15 +5,24 @@
 
 @model ConversorNumerosInteirosRomanos.WebApp.ConversorNumerico.Apresentacao.ConverterDeRomanoViewModel
 
-<h2>Converter Número Romano para Inteiro</h2>
+<div class="d-flex justify-content-center">
+    <h2>Converter Número Romano para Inteiro</h2>
+</div>
 
-<form asp-action="ConverterDeRomano" method="post">
-    <div class="form-group">
-        <label for="Romano">Número romano:</label>
-        <input asp-for="Romano" class="form-control" />
-        <span asp-validation-for="Romano" class="text-danger"></span>
-    </div>
-    <button type="submit" class="btn btn-success">Converter</button>
-</form>
+<div class="d-flex justify-content-center">
+    <form asp-action="ConverterDeRomano" method="post">
+        <div class="form-group mb-3">
+            <label for="Romano">Número romano:</label>
+            <input asp-for="Romano" class="form-control" />
+            <span asp-validation-for="Romano" class="text-danger"></span>
+        </div>
 
-<a asp-action="Listar" class="btn btn-link">Voltar ao histórico</a>
+        <div class="d-grid gap-2 mb-3">
+            <button type="submit" class="btn btn-success">Converter</button>
+        </div>
+    </form>
+</div>
+
+<div class="d-grid gap-2 mb-3">
+    <a asp-action="Listar" class="btn btn-link">Voltar ao histórico</a>
+</div>
